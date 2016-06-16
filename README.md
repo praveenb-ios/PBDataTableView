@@ -12,6 +12,8 @@ An easy-to-use PBDataTableView with sorting and search option.
 5. The Row content of the Tableview given to "dataTableArray" as shown in ViewController.<br>
 NOTE* It will be easy if you dont change the dictionay key. If you need to change the Keys, please make the change on "PBDataTableView" too.
 
+![Alt text](https://github.com/praveenb-ios/PBDataTableView/blob/master/iPAD_DataTableView.png "DataTableView_iPad")
+
 ## The MIT License (MIT)
 
 Copyright (c) 2016 Praveen B<br>
