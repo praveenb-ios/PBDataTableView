@@ -32,6 +32,7 @@ class ViewController: UIViewController, PBDataTableViewDelegate {
         //Not to change the Key of the Dictionaries if needs to be dynamic.
         dataTableView.dataTableArray = dataTableViewdictParams()
         
+        //Only if you want the Last column to be button make use of below two lines of code. You can cutomize the Button from PBDataTableViewCell.
         ApplicationDelegate.cellLastColumnButtonEnable = true
         dataTableView.lastColumnButtonHeaderName = "Edit"
 

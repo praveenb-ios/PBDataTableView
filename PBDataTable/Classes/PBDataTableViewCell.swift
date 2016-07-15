@@ -25,6 +25,7 @@ class PBDataTableViewCell: UITableViewCell {
             
             let columnLbl = UILabel()
 
+            //If Last Column of the Cell is Button
             if  ApplicationDelegate.cellLastColumnButtonEnable == true && i == ApplicationDelegate.numberOfColumns-1 {
                 let editBtn = UIButton(type: .Custom)
                 editBtn.frame = CGRectMake(labelXaxis, (CGRectGetHeight(self.frame)-35)/2, 70,35)
