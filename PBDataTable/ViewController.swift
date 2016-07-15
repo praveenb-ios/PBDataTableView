@@ -33,7 +33,8 @@ class ViewController: UIViewController, PBDataTableViewDelegate {
         dataTableView.dataTableArray = dataTableViewdictParams()
         
         ApplicationDelegate.cellLastColumnButtonEnable = true
-        
+        dataTableView.lastColumnButtonHeaderName = "Edit"
+
         dataTableView.setupView()
         self.view.addSubview(dataTableView)
     }

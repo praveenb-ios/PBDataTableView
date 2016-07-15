@@ -50,6 +50,8 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
     var searchBarGlassIconTintColor: UIColor = UIColor.whiteColor()
     var searchBarCancelBtnFont: UIFont = UIFont(name: "Helvetica", size: 15)!
     var searchBarCancelBtnColor: UIColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1)
+    
+    var lastColumnButtonHeaderName = "Edit"
 
     var delegate: PBDataTableViewDelegate!
     
@@ -184,7 +186,7 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         //Add Edit Button On Header
         if ApplicationDelegate.cellLastColumnButtonEnable == true {
             let editButton = UILabel()
-            editButton.text = "Edit"
+            editButton.text = lastColumnButtonHeaderName
             editButton.textAlignment = .Center
             editButton.font = UIFont(name: "Arial", size: 14)
             editButton.textColor = UIColor.whiteColor()
