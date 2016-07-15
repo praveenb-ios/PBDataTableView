@@ -22,13 +22,24 @@ class PBDataTableViewCell: UITableViewCell {
         var labelXaxis: CGFloat = 0
         
         for i in 0..<ApplicationDelegate.numberOfColumns {
+            
             let columnLbl = UILabel()
-            columnLbl.frame = CGRectMake(labelXaxis, 0, columnWidth,CGRectGetHeight(self.frame))
-            columnLbl.textAlignment = .Center
-            columnLbl.font = UIFont(name: "Arial", size: 10)
-            columnLbl.tag = 100+i
-            columnLbl.adjustsFontSizeToFitWidth = true
-            self.contentView.addSubview(columnLbl)
+
+            if  ApplicationDelegate.cellLastColumnButtonEnable == true && i == ApplicationDelegate.numberOfColumns-1 {
+                let editBtn = UIButton(type: .Custom)
+                editBtn.frame = CGRectMake(labelXaxis, (CGRectGetHeight(self.frame)-35)/2, 70,35)
+                editBtn.backgroundColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1.0)
+                editBtn.tag = 100+i
+                editBtn.setTitle("Edit", forState: .Normal)
+                self.contentView.addSubview(editBtn)
+            }else {
+                columnLbl.frame = CGRectMake(labelXaxis, 0, columnWidth,CGRectGetHeight(self.frame))
+                columnLbl.textAlignment = .Center
+                columnLbl.font = UIFont(name: "Arial", size: 10)
+                columnLbl.tag = 100+i
+                columnLbl.adjustsFontSizeToFitWidth = true
+                self.contentView.addSubview(columnLbl)
+            }
             
             if i != ApplicationDelegate.numberOfColumns-1 {
                 let innerBorderView = UIView()

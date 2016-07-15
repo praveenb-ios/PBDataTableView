@@ -32,6 +32,8 @@ class ViewController: UIViewController, PBDataTableViewDelegate {
         //Not to change the Key of the Dictionaries if needs to be dynamic.
         dataTableView.dataTableArray = dataTableViewdictParams()
         
+        ApplicationDelegate.cellLastColumnButtonEnable = true
+        
         dataTableView.setupView()
         self.view.addSubview(dataTableView)
     }
@@ -42,6 +44,10 @@ class ViewController: UIViewController, PBDataTableViewDelegate {
     }
     
     func tableViewDidSelectedRow(indexPath: NSIndexPath) {
+        print("selected row: \(indexPath)")
+    }
+    
+    func tableViewCellEditButtonTapped(indexPath: NSIndexPath) {
         print("selected row: \(indexPath)")
     }
     
@@ -71,6 +77,7 @@ class ViewController: UIViewController, PBDataTableViewDelegate {
         
         return dataTableArray
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

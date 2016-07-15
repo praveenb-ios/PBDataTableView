@@ -10,6 +10,7 @@ import UIKit
 
 protocol PBDataTableViewDelegate: class {
     func tableViewDidSelectedRow(indexPath: NSIndexPath)
+    func tableViewCellEditButtonTapped(indexPath: NSIndexPath)
 }
 
 class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate , UISearchControllerDelegate{
@@ -24,7 +25,6 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
     @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var tableHeaderView: UIView!
     @IBOutlet var dataTableView: UITableView!
-    
     @IBOutlet var noRecordLbl: UILabel!
     
     var filteredDataTableArray: NSMutableArray = NSMutableArray()
@@ -61,7 +61,13 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
             let eachLblWidth = CGFloat(eachHeader.objectForKey("widthSize") as! NSNumber)
             totalColumnWidth = eachLblWidth + totalColumnWidth
         }
-        ApplicationDelegate.numberOfColumns = columnDataArray.count
+        
+        if ApplicationDelegate.cellLastColumnButtonEnable == true {
+            totalColumnWidth = totalColumnWidth + 80
+            ApplicationDelegate.numberOfColumns = columnDataArray.count + 1
+        }else {
+            ApplicationDelegate.numberOfColumns = columnDataArray.count
+        }
         
         if enableSearchBar {
             searchBarCustomizeView()
@@ -174,6 +180,18 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
             headerLblXaxis = eachLblWidth + headerLblXaxis
             headerCount += 1
         }
+        
+        //Add Edit Button On Header
+        if ApplicationDelegate.cellLastColumnButtonEnable == true {
+            let editButton = UILabel()
+            editButton.text = "Edit"
+            editButton.textAlignment = .Center
+            editButton.font = UIFont(name: "Arial", size: 14)
+            editButton.textColor = UIColor.whiteColor()
+            editButton.adjustsFontSizeToFitWidth = true
+            tableHeaderView.addSubview(editButton)
+            editButton.frame = CGRectMake(headerLblXaxis, 0, 70, CGRectGetHeight(tableHeaderView.frame))
+        }
     }
     
     //MARK: - TableView DataSource
@@ -238,24 +256,44 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         var labelXaxis: CGFloat = 0
 
         for i in 0..<ApplicationDelegate.numberOfColumns {
-            let columnLbl = cell.contentView.viewWithTag(100+i) as? UILabel
+            var columnLbl: UILabel!
+            var columnBtn: UIButton!
+
+            if i == ApplicationDelegate.numberOfColumns-1 && ApplicationDelegate.cellLastColumnButtonEnable == true {
+                columnBtn = cell.contentView.viewWithTag(100+i) as? UIButton
+                columnBtn.addTarget(self, action: #selector(editBtnTapped(_:)), forControlEvents: .TouchUpInside)
+                
+                var rect = columnBtn!.frame
+                rect.origin.x = labelXaxis+5
+                rect.size.width = CGRectGetWidth(columnBtn.frame)
+                columnBtn!.frame = rect
+                
+            }else {
+                columnLbl = cell.contentView.viewWithTag(100+i) as? UILabel
+                var rect = columnLbl!.frame
+                rect.origin.x = labelXaxis
+                rect.size.width = CGFloat(columnDataArray.objectAtIndex(i).objectForKey("widthSize") as! NSNumber)
+                columnLbl!.frame = rect
+                columnLbl!.text = String(columnDict.objectForKey("rowColumn\(i+1)")!)
+                
+                labelXaxis = labelXaxis + CGRectGetWidth((columnLbl?.frame)!)
+            }
+
             let innerLine = cell.contentView.viewWithTag(200+i)
-            
-            var rect = columnLbl!.frame
-            rect.origin.x = labelXaxis
-            rect.size.width = CGFloat(columnDataArray.objectAtIndex(i).objectForKey("widthSize") as! NSNumber)
-            columnLbl!.frame = rect
-            columnLbl!.text = String(columnDict.objectForKey("rowColumn\(i+1)")!)
-            
             if enableCellInnerBorder {
                 innerLine?.frame = CGRectMake(CGRectGetMaxX(columnLbl!.frame)-1, 0, 1, CGRectGetHeight(cell.frame))
                 innerLine?.hidden = false
             }else {
                 innerLine?.hidden = true
             }
-            
-            labelXaxis = labelXaxis + CGRectGetWidth((columnLbl?.frame)!)
         }
+    }
+    
+    func editBtnTapped(sender: UIButton) {
+        let btnPosition = sender.convertPoint(CGPointZero, toView: dataTableView)
+        let selectedIndex = dataTableView.indexPathForRowAtPoint(btnPosition)
+        
+        delegate.tableViewCellEditButtonTapped(selectedIndex!)
     }
     
     func headerColumnBtnTapped(sender: UIButton) {
