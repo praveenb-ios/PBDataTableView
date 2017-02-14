@@ -27,15 +27,15 @@ class PBDataTableViewCell: UITableViewCell {
 
             //If Last Column of the Cell is Button
             if  ApplicationDelegate.cellLastColumnButtonEnable == true && i == ApplicationDelegate.numberOfColumns-1 {
-                let editBtn = UIButton(type: .Custom)
-                editBtn.frame = CGRectMake(labelXaxis, (CGRectGetHeight(self.frame)-35)/2, 70,35)
+                let editBtn = UIButton(type: .custom)
+                editBtn.frame = CGRect(x: labelXaxis, y: (self.frame.height-35)/2, width: 70,height: 35)
                 editBtn.backgroundColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1.0)
                 editBtn.tag = 100+i
-                editBtn.setTitle("Edit", forState: .Normal)
+                editBtn.setTitle("Edit", for: UIControlState())
                 self.contentView.addSubview(editBtn)
             }else {
-                columnLbl.frame = CGRectMake(labelXaxis, 0, columnWidth,CGRectGetHeight(self.frame))
-                columnLbl.textAlignment = .Center
+                columnLbl.frame = CGRect(x: labelXaxis, y: 0, width: columnWidth,height: self.frame.height)
+                columnLbl.textAlignment = .center
                 columnLbl.font = UIFont(name: "Arial", size: 10)
                 columnLbl.tag = 100+i
                 columnLbl.adjustsFontSizeToFitWidth = true
@@ -44,7 +44,7 @@ class PBDataTableViewCell: UITableViewCell {
             
             if i != ApplicationDelegate.numberOfColumns-1 {
                 let innerBorderView = UIView()
-                innerBorderView.frame = CGRectMake(CGRectGetMaxX(columnLbl.frame)-1, 0, 1, CGRectGetHeight(self.frame))
+                innerBorderView.frame = CGRect(x: columnLbl.frame.maxX-1, y: 0, width: 1, height: self.frame.height)
                 innerBorderView.backgroundColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1.0)
                 innerBorderView.tag = 200+i
                 self.contentView.addSubview(innerBorderView)
@@ -55,7 +55,7 @@ class PBDataTableViewCell: UITableViewCell {
 
     }
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state

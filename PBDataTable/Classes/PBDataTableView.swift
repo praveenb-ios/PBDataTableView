@@ -9,11 +9,11 @@
 import UIKit
 
 protocol PBDataTableViewDelegate: class {
-    func tableViewDidSelectedRow(indexPath: NSIndexPath)
-    func tableViewCellEditButtonTapped(indexPath: NSIndexPath)
+    func tableViewDidSelectedRow(_ indexPath: IndexPath)
+    func tableViewCellEditButtonTapped(_ indexPath: IndexPath)
 }
 
-class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate , UISearchControllerDelegate{
+class PBDataTableView: UIView {
 
     @IBOutlet var searchBarHeightConstraint: NSLayoutConstraint!
     @IBOutlet var searchBarTrailingConstraint: NSLayoutConstraint!
@@ -44,10 +44,10 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
     var searchBarBackgroundColor: UIColor = UIColor(red: 246/255, green: 139/255, blue: 31/255, alpha: 1)
     var searchBarTxtFldFont: UIFont = UIFont(name: "Helvetica", size: 15)!
     var searchBarTxtFldTxtColor: UIColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1)
-    var searchBarTxtFldBackgroundColor: UIColor = UIColor.clearColor()
+    var searchBarTxtFldBackgroundColor: UIColor = UIColor.clear
     var searchBarTxtFldPlaceholderColor: UIColor = UIColor(red: 225/255, green: 225/255, blue: 225/255, alpha: 1)
     var searchBarTxtFldPlaceholder: String = "Search with First and Last name"
-    var searchBarGlassIconTintColor: UIColor = UIColor.whiteColor()
+    var searchBarGlassIconTintColor: UIColor = UIColor.white
     var searchBarCancelBtnFont: UIFont = UIFont(name: "Helvetica", size: 15)!
     var searchBarCancelBtnColor: UIColor = UIColor(red: 64/255, green: 64/255, blue: 64/255, alpha: 1)
     
@@ -60,7 +60,7 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         
         //To Calculate total width of the header view
         for eachHeader in columnDataArray {
-            let eachLblWidth = CGFloat(eachHeader.objectForKey("widthSize") as! NSNumber)
+            let eachLblWidth = CGFloat((eachHeader as AnyObject).object(forKey: "widthSize") as! NSNumber)
             totalColumnWidth = eachLblWidth + totalColumnWidth
         }
         
@@ -73,17 +73,17 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         
         if enableSearchBar {
             searchBarCustomizeView()
-            searchBar.hidden = false
+            searchBar.isHidden = false
             searchBarHeightConstraint.constant = 44
         }else {
-            searchBar.hidden = true
+            searchBar.isHidden = true
             searchBarHeightConstraint.constant = 0
         }
         //Create Header View for Tableview
         self.createTableHeaderView()
         
         let nib = UINib(nibName: "PBDataTableViewCell", bundle: nil)
-        dataTableView.registerNib(nib, forCellReuseIdentifier: "Cell")
+        dataTableView.register(nib, forCellReuseIdentifier: "Cell")
     }
     
     //Customize the Search bar
@@ -92,45 +92,45 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         searchBar.backgroundImage = UIImage()
         searchBar.backgroundColor = searchBarBackgroundColor
         
-        let textFieldInsideSearchBar = searchBar.valueForKey("searchField") as? UITextField
+        let textFieldInsideSearchBar = searchBar.value(forKey: "searchField") as? UITextField
         textFieldInsideSearchBar?.textColor = searchBarTxtFldTxtColor
         textFieldInsideSearchBar?.font = searchBarTxtFldFont
         textFieldInsideSearchBar?.backgroundColor = searchBarTxtFldBackgroundColor
-        textFieldInsideSearchBar?.tintColor = UIColor.blackColor()
+        textFieldInsideSearchBar?.tintColor = UIColor.black
         textFieldInsideSearchBar?.placeholder = searchBarTxtFldPlaceholder
         
-        let textFieldInsideSearchBarLabel = textFieldInsideSearchBar!.valueForKey("placeholderLabel") as? UILabel
+        let textFieldInsideSearchBarLabel = textFieldInsideSearchBar!.value(forKey: "placeholderLabel") as? UILabel
         textFieldInsideSearchBarLabel?.textColor = searchBarTxtFldPlaceholderColor
         
         if let glassIconView = textFieldInsideSearchBar!.leftView as? UIImageView {
             
             //Magnifying glass
-            glassIconView.image = glassIconView.image?.imageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate)
+            glassIconView.image = glassIconView.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
             glassIconView.tintColor = searchBarGlassIconTintColor
             
         }
         
-        UIBarButtonItem.appearanceWhenContainedInInstancesOfClasses([UISearchBar.classForCoder()])
+        UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.classForCoder() as! UIAppearanceContainer.Type])
             .setTitleTextAttributes([
                 NSFontAttributeName: searchBarCancelBtnFont,
                 NSForegroundColorAttributeName: searchBarCancelBtnColor
-                ],forState: UIControlState.Normal)
+                ],for: UIControlState())
     }
     
     //Check the total width and re-size the scrollview.superview width by changing the Trailing Constraint
 
     func configureView() {
-        if totalColumnWidth > CGRectGetWidth(self.frame) {
-            scrollSuperViewTrailingConstraint.constant = (CGRectGetWidth(bgScrollView.frame)-totalColumnWidth)
+        if totalColumnWidth > self.frame.width {
+            scrollSuperViewTrailingConstraint.constant = (bgScrollView.frame.width-totalColumnWidth)
             searchBarTrailingConstraint.constant = 0
 
             self.updateConstraints()
             self.layoutIfNeeded()
             
-            bgScrollView.contentSize = CGSizeMake(CGRectGetWidth(bgScrollView.frame)-scrollSuperViewTrailingConstraint.constant, CGRectGetHeight(self.frame)-searchBarHeightConstraint.constant)
+            bgScrollView.contentSize = CGSize(width: bgScrollView.frame.width-scrollSuperViewTrailingConstraint.constant, height: self.frame.height-searchBarHeightConstraint.constant)
             dataTableView.reloadData()
         }else {
-            tableVwTrailingConstraint.constant = (CGRectGetWidth(bgScrollView.frame) - totalColumnWidth)
+            tableVwTrailingConstraint.constant = (bgScrollView.frame.width - totalColumnWidth)
             headerVwTrailingConstraint.constant = tableVwTrailingConstraint.constant
             searchBarTrailingConstraint.constant = tableVwTrailingConstraint.constant
 
@@ -146,38 +146,38 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         
         for eachHeader in columnDataArray {
             
-            let eachLblWidth = CGFloat(eachHeader.objectForKey("widthSize") as! NSNumber)
+            let eachLblWidth = CGFloat((eachHeader as AnyObject).object(forKey: "widthSize") as! NSNumber)
             
             //Header Label
             let columnHeaderLbl = UILabel()
-            columnHeaderLbl.text = eachHeader.objectForKey("name") as? String
-            columnHeaderLbl.textAlignment = .Center
+            columnHeaderLbl.text = (eachHeader as AnyObject).object(forKey: "name") as? String
+            columnHeaderLbl.textAlignment = .center
             columnHeaderLbl.font = UIFont(name: "Arial", size: 14)
             columnHeaderLbl.tag = 1000+headerCount
-            columnHeaderLbl.textColor = UIColor.whiteColor()
+            columnHeaderLbl.textColor = UIColor.white
             columnHeaderLbl.adjustsFontSizeToFitWidth = true
             tableHeaderView.addSubview(columnHeaderLbl)
 
             if enableSorting {
-                columnHeaderLbl.frame = CGRectMake(headerLblXaxis, 0, eachLblWidth-25, CGRectGetHeight(tableHeaderView.frame))
+                columnHeaderLbl.frame = CGRect(x: headerLblXaxis, y: 0, width: eachLblWidth-25, height: tableHeaderView.frame.height)
 
                 //Header Sort ImageView
                 let sortImg = UIImageView(image: UIImage(named: "none"))
                 sortImg.accessibilityIdentifier = "0"
                 
-                sortImg.frame = CGRectMake(CGRectGetMaxX(columnHeaderLbl.frame)+5, (CGRectGetHeight(tableHeaderView.frame)-sortImg.image!.size.height)/2, sortImg.image!.size.width, sortImg.image!.size.height)
+                sortImg.frame = CGRect(x: columnHeaderLbl.frame.maxX+5, y: (tableHeaderView.frame.height-sortImg.image!.size.height)/2, width: sortImg.image!.size.width, height: sortImg.image!.size.height)
                 sortImg.tag = 2000+headerCount
                 tableHeaderView.addSubview(sortImg)
                 
                 //Header Button to Sort the rows on tap
-                let headerBtn = UIButton(type: .Custom)
-                headerBtn.frame = CGRectMake(CGRectGetMinX(columnHeaderLbl.frame), 0, eachLblWidth, CGRectGetHeight(columnHeaderLbl.frame))
-                headerBtn.backgroundColor = UIColor.clearColor()
-                headerBtn.addTarget(self, action: #selector(headerColumnBtnTapped), forControlEvents: .TouchUpInside)
+                let headerBtn = UIButton(type: .custom)
+                headerBtn.frame = CGRect(x: columnHeaderLbl.frame.minX, y: 0, width: eachLblWidth, height: columnHeaderLbl.frame.height)
+                headerBtn.backgroundColor = UIColor.clear
+                headerBtn.addTarget(self, action: #selector(headerColumnBtnTapped), for: .touchUpInside)
                 headerBtn.tag = 3000+headerCount
                 tableHeaderView.addSubview(headerBtn)
             }else {
-                columnHeaderLbl.frame = CGRectMake(headerLblXaxis, 0, eachLblWidth, CGRectGetHeight(tableHeaderView.frame))
+                columnHeaderLbl.frame = CGRect(x: headerLblXaxis, y: 0, width: eachLblWidth, height: tableHeaderView.frame.height)
             }
             headerLblXaxis = eachLblWidth + headerLblXaxis
             headerCount += 1
@@ -187,118 +187,23 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         if ApplicationDelegate.cellLastColumnButtonEnable == true {
             let editButton = UILabel()
             editButton.text = lastColumnButtonHeaderName
-            editButton.textAlignment = .Center
+            editButton.textAlignment = .center
             editButton.font = UIFont(name: "Arial", size: 14)
-            editButton.textColor = UIColor.whiteColor()
+            editButton.textColor = UIColor.white
             editButton.adjustsFontSizeToFitWidth = true
             tableHeaderView.addSubview(editButton)
-            editButton.frame = CGRectMake(headerLblXaxis, 0, 70, CGRectGetHeight(tableHeaderView.frame))
+            editButton.frame = CGRect(x: headerLblXaxis, y: 0, width: 70, height: tableHeaderView.frame.height)
         }
     }
     
-    //MARK: - TableView DataSource
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if shouldShowSearchResults {
-            if filteredDataTableArray.count > 0 {
-                noRecordLbl.hidden = true
-                dataTableView.hidden = false
-            }else {
-                noRecordLbl.hidden = false
-                dataTableView.hidden = true
-            }
-            return filteredDataTableArray.count
-        }else {
-            if dataTableArray.count > 0 {
-                noRecordLbl.hidden = true
-                dataTableView.hidden = false
-            }else {
-                noRecordLbl.hidden = false
-                dataTableView.hidden = true
-            }
-            return dataTableArray.count
-        }
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! PBDataTableViewCell
-        
-        cell.backgroundColor = UIColor.whiteColor()
-        configureCell(cell, indexPath: indexPath)
-        
-        if enableCellOuterBorder {
-            cell.leftBorderView.hidden = false
-            cell.rightBorderView.hidden = false
-            cell.bottomBorderView.hidden = false
-        }else {
-            cell.leftBorderView.hidden = true
-            cell.rightBorderView.hidden = true
-            cell.bottomBorderView.hidden = true
-        }
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 44
-    }
-    
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        delegate.tableViewDidSelectedRow(indexPath)
-    }
-    
-    //Configure Tableview Cells with Defined Label
-    func configureCell(cell: PBDataTableViewCell, indexPath: NSIndexPath) {
-        let columnDict: NSDictionary!
-        
-        if shouldShowSearchResults {
-            columnDict = filteredDataTableArray.objectAtIndex(indexPath.row) as! NSDictionary
-        }else {
-            columnDict = dataTableArray.objectAtIndex(indexPath.row) as! NSDictionary
-        }
-        var labelXaxis: CGFloat = 0
-
-        for i in 0..<ApplicationDelegate.numberOfColumns {
-            var columnLbl: UILabel!
-            var columnBtn: UIButton!
-
-            if i == ApplicationDelegate.numberOfColumns-1 && ApplicationDelegate.cellLastColumnButtonEnable == true {
-                columnBtn = cell.contentView.viewWithTag(100+i) as? UIButton
-                columnBtn.addTarget(self, action: #selector(editBtnTapped(_:)), forControlEvents: .TouchUpInside)
-                
-                var rect = columnBtn!.frame
-                rect.origin.x = labelXaxis+5
-                rect.size.width = CGRectGetWidth(columnBtn.frame)
-                columnBtn!.frame = rect
-                
-            }else {
-                columnLbl = cell.contentView.viewWithTag(100+i) as? UILabel
-                var rect = columnLbl!.frame
-                rect.origin.x = labelXaxis
-                rect.size.width = CGFloat(columnDataArray.objectAtIndex(i).objectForKey("widthSize") as! NSNumber)
-                columnLbl!.frame = rect
-                columnLbl!.text = String(columnDict.objectForKey("rowColumn\(i+1)")!)
-                
-                labelXaxis = labelXaxis + CGRectGetWidth((columnLbl?.frame)!)
-            }
-
-            let innerLine = cell.contentView.viewWithTag(200+i)
-            if enableCellInnerBorder {
-                innerLine?.frame = CGRectMake(CGRectGetMaxX(columnLbl!.frame)-1, 0, 1, CGRectGetHeight(cell.frame))
-                innerLine?.hidden = false
-            }else {
-                innerLine?.hidden = true
-            }
-        }
-    }
-    
-    func editBtnTapped(sender: UIButton) {
-        let btnPosition = sender.convertPoint(CGPointZero, toView: dataTableView)
-        let selectedIndex = dataTableView.indexPathForRowAtPoint(btnPosition)
+    func editBtnTapped(_ sender: UIButton) {
+        let btnPosition = sender.convert(CGPoint.zero, to: dataTableView)
+        let selectedIndex = dataTableView.indexPathForRow(at: btnPosition)
         
         delegate.tableViewCellEditButtonTapped(selectedIndex!)
     }
     
-    func headerColumnBtnTapped(sender: UIButton) {
+    func headerColumnBtnTapped(_ sender: UIButton) {
         for i in 0..<ApplicationDelegate.numberOfColumns {
             if sender.tag == i+3000 {
                 let headerSortImg = sender.superview!.viewWithTag(2000+i) as? UIImageView
@@ -326,24 +231,131 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
     }
     
     //MARK: - Sorting Method
-    func sortingDataTableArray(intValue: Int, boolValue: Bool) {
+    func sortingDataTableArray(_ intValue: Int, boolValue: Bool) {
         let sort = NSSortDescriptor(key: "rowColumn\(intValue+1)", ascending:boolValue)
         if shouldShowSearchResults {
-            filteredDataTableArray.sortUsingDescriptors([sort])
+            filteredDataTableArray.sort(using: [sort])
         }else {
-            dataTableArray.sortUsingDescriptors([sort])
+            dataTableArray.sort(using: [sort])
         }
         dataTableView.reloadData()
     }
+}
+
+//MARK: - TableView DataSource
+extension PBDataTableView: UITableViewDataSource {
     
-    //MARK: - Search Bar Delegate Methods
-    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if shouldShowSearchResults {
+            if filteredDataTableArray.count > 0 {
+                noRecordLbl.isHidden = true
+                dataTableView.isHidden = false
+            }else {
+                noRecordLbl.isHidden = false
+                dataTableView.isHidden = true
+            }
+            return filteredDataTableArray.count
+        }else {
+            if dataTableArray.count > 0 {
+                noRecordLbl.isHidden = true
+                dataTableView.isHidden = false
+            }else {
+                noRecordLbl.isHidden = false
+                dataTableView.isHidden = true
+            }
+            return dataTableArray.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! PBDataTableViewCell
+        
+        cell.backgroundColor = UIColor.white
+        configureCell(cell, indexPath: indexPath)
+        
+        if enableCellOuterBorder {
+            cell.leftBorderView.isHidden = false
+            cell.rightBorderView.isHidden = false
+            cell.bottomBorderView.isHidden = false
+        }else {
+            cell.leftBorderView.isHidden = true
+            cell.rightBorderView.isHidden = true
+            cell.bottomBorderView.isHidden = true
+        }
+        return cell
+    }
+    
+    //Configure Tableview Cells with Defined Label
+    func configureCell(_ cell: PBDataTableViewCell, indexPath: IndexPath) {
+        let columnDict: NSDictionary!
+        
+        if shouldShowSearchResults {
+            columnDict = filteredDataTableArray.object(at: (indexPath as NSIndexPath).row) as! NSDictionary
+        }else {
+            columnDict = dataTableArray.object(at: (indexPath as NSIndexPath).row) as! NSDictionary
+        }
+        var labelXaxis: CGFloat = 0
+        
+        for i in 0..<ApplicationDelegate.numberOfColumns {
+            var columnLbl: UILabel!
+            var columnBtn: UIButton!
+            
+            if i == ApplicationDelegate.numberOfColumns-1 && ApplicationDelegate.cellLastColumnButtonEnable == true {
+                columnBtn = cell.contentView.viewWithTag(100+i) as? UIButton
+                columnBtn.addTarget(self, action: #selector(editBtnTapped(_:)), for: .touchUpInside)
+                
+                var rect = columnBtn!.frame
+                rect.origin.x = labelXaxis+5
+                rect.size.width = columnBtn.frame.width
+                columnBtn!.frame = rect
+                
+            }else {
+                columnLbl = cell.contentView.viewWithTag(100+i) as? UILabel
+                var rect = columnLbl!.frame
+                rect.origin.x = labelXaxis
+                
+                if case let eachArray as NSDictionary = columnDataArray.object(at: i) {
+                    rect.size.width = CGFloat(eachArray.object(forKey: "widthSize") as! NSNumber)
+                }
+                
+                columnLbl!.frame = rect
+                columnLbl!.text = String(describing: columnDict.object(forKey: "rowColumn\(i+1)")!)
+                
+                labelXaxis = labelXaxis + (columnLbl?.frame)!.width
+            }
+            
+            let innerLine = cell.contentView.viewWithTag(200+i)
+            if enableCellInnerBorder {
+                innerLine?.frame = CGRect(x: columnLbl!.frame.maxX-1, y: 0, width: 1, height: cell.frame.height)
+                innerLine?.isHidden = false
+            }else {
+                innerLine?.isHidden = true
+            }
+        }
+    }
+}
+
+//MARK: - TableView Delegate
+extension PBDataTableView: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate.tableViewDidSelectedRow(indexPath)
+    }
+}
+
+//MARK: - Search Bar Delegate
+extension PBDataTableView: UISearchBarDelegate, UISearchControllerDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         shouldShowSearchResults = true
         searchBar.showsCancelButton = true
     }
     
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
         shouldShowSearchResults = false
         searchBar.text = ""
@@ -351,7 +363,7 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         dataTableView.reloadData()
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if !shouldShowSearchResults {
             shouldShowSearchResults = true
             dataTableView.reloadData()
@@ -359,16 +371,17 @@ class PBDataTableView: UIView, UITableViewDelegate, UITableViewDataSource, UISea
         searchBar.resignFirstResponder()
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
         if searchText == "" {
             shouldShowSearchResults = false
         }else {
             shouldShowSearchResults = true
             //filtered with firstname and last name. Give the column names respectively to be sorted
             let results = dataTableArray.filter({ person in
-                if let firstname = person["rowColumn1"] as? String, lastname = person["rowColumn2"] as? String, query = searchBar.text {
-                    return firstname.rangeOfString(query, options: [.CaseInsensitiveSearch, .DiacriticInsensitiveSearch]) != nil || lastname.rangeOfString(query, options: [.CaseInsensitiveSearch, .DiacriticInsensitiveSearch]) != nil
+                let personDict = person as! NSDictionary
+                if let firstname = personDict["rowColumn1"] as? String, let lastname = personDict["rowColumn2"] as? String, let query = searchBar.text {
+                    return firstname.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) != nil || lastname.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) != nil
                 }
                 return false
             })
